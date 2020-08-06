@@ -1,0 +1,19 @@
+name: SovaultServerManager
+version: 0.1dev
+main: com.nia.sovaultservermanager.SovaultServerManager
+api-version: 1.12.2
+
+commands:
+  stat:
+    aliases: ["stat"]
+    description: "Get player stat."
+    usage: ""
+  menu:
+    description: "Open menu."
+    usage: "/menu"
+  test:
+    description: "test"
+    usage: "/test"
+  team:
+    description: "team"
+    usage: "/team"

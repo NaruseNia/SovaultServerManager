@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.nia</groupId>
+    <artifactId>SovaultServerManager</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>SovaultServerManager</name>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <!--suppress UnresolvedMavenProperty -->
+        <finalName>${project.name}-Build-${project.version}-${git.commit.id.abbrev}</finalName>
+        <defaultGoal>clean package</defaultGoal>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <minimizeJar>true</minimizeJar>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>scarsz</id>
+            <url>https://nexus.scarsz.me/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>vankka</id>
+            <url>https://nexus.vankka.dev/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+          <groupId>com.squareup.okhttp3</groupId>
+          <artifactId>okhttp</artifactId>
+          <version>3.14.0</version>
+        </dependency>
+        <dependency>
+          <groupId>com.squareup.okio</groupId>
+          <artifactId>okio</artifactId>
+          <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.dv8tion</groupId>
+            <artifactId>JDA</artifactId>
+            <version>4.1.1_155</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>club.minnced</groupId>
+                    <artifactId>opus-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.neovisionaries</groupId>
+            <artifactId>nv-websocket-client</artifactId>
+            <version>2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <!-- MC <  1.12 = 2.0-beta9 -->
+            <!-- MC >= 1.12 = 2.1 -->
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- mysql driver -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.49</version> <!-- Matches CraftBukkit's version --> <!-- 8.0.20 -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- dependency hell -->
+        <dependency>
+            <groupId>net.sf.trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
+        <!-- json.simple -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <!-- emoji parser -->
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
+            <version>3.1.3</version>
+        </dependency>
+
+        <!-- semantic versioning parser -->
+        <dependency>
+            <groupId>com.github.zafarkhaja</groupId>
+            <artifactId>java-semver</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
+        <!-- dns library for when system dns sucks -->
+        <dependency>
+            <groupId>org.minidns</groupId>
+            <artifactId>minidns-hla</artifactId>
+            <version>0.3.4</version>
+        </dependency>
+
+        <!-- Discord <-> Minecraft reserializer -->
+        <dependency>
+            <groupId>dev.vankka</groupId>
+            <artifactId>MCDiscordReserializer</artifactId>
+            <version>3.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.kyori</groupId>
+                    <artifactId>text-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Kyori Text -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>text-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>text-serializer-legacy</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>text-adapter-bukkit</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!-- guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>27.1-jre</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>5.2.7.RELEASE</version>
+        </dependency>
+
+        <!-- herochat -->
+        <dependency>
+            <groupId>com.dthielke.herochat</groupId>
+            <artifactId>Herochat</artifactId>
+            <version>5.6.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- legendchat -->
+        <dependency>
+            <groupId>br.com.devpaulo</groupId>
+            <artifactId>legendchat</artifactId>
+            <version>1.1.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- lunachat -->
+        <dependency>
+            <groupId>com.github.ucchyocean.lc</groupId>
+            <artifactId>LunaChat</artifactId>
+            <version>2.8.8</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- mcMMO -->
+        <dependency>
+            <groupId>com.gmail.nossr50</groupId>
+            <artifactId>mcmmo</artifactId>
+            <version>1.5.07</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- multiverse-core -->
+        <dependency>
+            <groupId>com.onarandombox.MultiverseCore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- townychat -->
+        <dependency>
+            <groupId>com.palmergames.bukkit</groupId>
+            <artifactId>TownyChat</artifactId>
+            <version>0.45</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- ultimatechat -->
+        <!--        <dependency>-->
+        <!--            <groupId>br.net.fabiozumbi12.UltimateChat</groupId>-->
+        <!--            <artifactId>UltimateChat-Spigot</artifactId>-->
+        <!--            <version>1.8.9</version>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
+        <dependency>
+            <groupId>br.net.fabiozumbi12</groupId>
+            <artifactId>UltimateChat</artifactId>
+            <version>1.9.0-b253</version> <!-- From Scarsz maven 3rd party, not availabe on UC's -->
+            <classifier>Universal</classifier> <!-- Nexus decided it wanted this -->
+            <scope>provided</scope>
+        </dependency>
+        <!-- venturechat -->
+        <dependency>
+            <groupId>mineverse.aust1n46</groupId>
+            <artifactId>venturechat</artifactId>
+            <version>2.18.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- ProtocolLib (needed for venturechat) -->
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.5.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- fancychat -->
+        <dependency>
+            <groupId>br.com.finalcraft</groupId>
+            <artifactId>fancychat</artifactId>
+            <version>1.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- vault -->
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- placeholder api -->
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>PlaceholderAPI</artifactId>
+            <version>2.7.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- permissions -->
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- dynmap -->
+        <dependency>
+            <groupId>org.dynmap</groupId>
+            <artifactId>dynmap-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.njol</groupId>
+            <artifactId>skript</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
