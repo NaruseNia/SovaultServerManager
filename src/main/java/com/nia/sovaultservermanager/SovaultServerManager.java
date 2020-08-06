@@ -7,6 +7,7 @@ import com.nia.sovaultservermanager.discord.webhook.DiscordWebHook;
 import com.nia.sovaultservermanager.listener.ClickEventListener;
 import com.nia.sovaultservermanager.test.TestCommandExecutor;
 import com.nia.sovaultservermanager.util.PropertyLoader;
+import com.nia.sovaultservermanager.util.PropertyType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,6 +23,7 @@ public final class SovaultServerManager extends JavaPlugin {
 
     private static Properties properties;
     private static Properties stat;
+    private static Properties webHookProp;
 
     private static DiscordWebHook webHook;
 
@@ -31,26 +33,22 @@ public final class SovaultServerManager extends JavaPlugin {
 
         try {
             properties = new PropertyLoader("messages/message.properties").getProperties();
+            stat = new PropertyLoader("messages/stat.properties").getProperties();
+            webHookProp = new PropertyLoader("webHook.properties").getProperties();
         } catch (IOException e) {
             getLogger().warning("プロパティファイルを読み込めませんでした。");
             e.printStackTrace();
         }
 
         try {
-            webHook = new DiscordWebHook("https://discordapp.com/api/webhooks/738518396563488808/LrEE5tLsAhAqvgAJz4uu1nYml5xFGUSHQqBOGc6kfYhno1855ZfZt7ZnskeTbS6iA1p9")
-                                            .setUsername("SSM");
+            webHook = new DiscordWebHook(webHookProp.getProperty("webHook_url"))
+                                        .setUsername(webHookProp.getProperty("webHook_name"))
+                                        .setAvatar(webHookProp.getProperty("webHook_avatar"));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
-        try {
-            stat = new PropertyLoader("messages/stat.properties").getProperties();
-        } catch (IOException e) {
-            getLogger().warning("プロパティファイルを読み込めませんでした。");
-            e.printStackTrace();
-        }
-
-        //sendToDiscord("こんにちは！");
+        sendToDiscord("こんにちは！");
 
         getCommand("stat").setExecutor(new StatCommandExecutor());
         getCommand("menu").setExecutor(new MenuCommandExecutor());
@@ -80,12 +78,10 @@ public final class SovaultServerManager extends JavaPlugin {
         }
     }
 
-    public static Properties getStatLocalize() {
-        return stat;
-    }
-
-    public static Properties getProperties() {
-        return properties;
+    public static Properties getProperties(PropertyType type) {
+        if (type.equals(PropertyType.MAIN)) return properties;
+        if (type.equals(PropertyType.STAT)) return stat;
+        return null;
     }
 
     public static SovaultServerManager getInstance() {

@@ -1,6 +1,7 @@
 package com.nia.sovaultservermanager.command;
 
 import com.nia.sovaultservermanager.SovaultServerManager;
+import com.nia.sovaultservermanager.util.PropertyType;
 import com.nia.sovaultservermanager.util.Utils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -23,8 +24,8 @@ import java.util.UUID;
 
 public class StatCommandExecutor implements CommandExecutor {
 
-    private Properties message = SovaultServerManager.getProperties();
-    private Properties statLocalize = SovaultServerManager.getStatLocalize();
+    private Properties message = SovaultServerManager.getProperties(PropertyType.MAIN);
+    private Properties statMessage = SovaultServerManager.getProperties(PropertyType.STAT);
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -74,11 +75,11 @@ public class StatCommandExecutor implements CommandExecutor {
     public void showAllStats(CommandSender sender, Player playerTarget){
         for (Statistic value : getAllPlayerStat(playerTarget)) {
             if (value.toString().equals("PLAY_ONE_TICK") || value.toString().equals("SNEAK_TIME") || value.toString().equals("TIME_SINCE_DEATH")) {
-                sender.sendMessage(statLocalize.getProperty("stat." + value.toString()) + ChatColor.GREEN + Utils.ConvertTickToTime(playerTarget.getStatistic(value)) + "(" + playerTarget.getStatistic(value) + "tick)");
+                sender.sendMessage(statMessage.getProperty("stat." + value.toString()) + ChatColor.GREEN + Utils.ConvertTickToTime(playerTarget.getStatistic(value)) + "(" + playerTarget.getStatistic(value) + "tick)");
             } else if (value.toString().contains("CM")) {
-                sender.sendMessage(statLocalize.getProperty("stat." + value.toString()) + ChatColor.GREEN + playerTarget.getStatistic(value) + "cm");
+                sender.sendMessage(statMessage.getProperty("stat." + value.toString()) + ChatColor.GREEN + playerTarget.getStatistic(value) + "cm");
             } else {
-                sender.sendMessage(statLocalize.getProperty("stat." + value.toString()) + ChatColor.GREEN + playerTarget.getStatistic(value));
+                sender.sendMessage(statMessage.getProperty("stat." + value.toString()) + ChatColor.GREEN + playerTarget.getStatistic(value));
             }
         }
     }
