@@ -17,3 +17,6 @@ commands:
   team:
     description: "team"
     usage: "/team"
+  timer:
+    description: "timer"
+    usage: "/timer"

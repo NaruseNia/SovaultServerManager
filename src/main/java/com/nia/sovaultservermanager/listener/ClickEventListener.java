@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -64,9 +65,9 @@ public class ClickEventListener implements Listener {
                         Collections.shuffle(playerList);
                         for (int i = 0; i < playerList.size(); i++){
                             if ((i % 2) == 1){
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams join " + "red" + " " + playerList.get(i).getDisplayName());
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams join " + "Red" + " " + playerList.get(i).getDisplayName());
                             }else{
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams join " + "blue" + " " + playerList.get(i).getDisplayName());
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "scoreboard teams join " + "Blue" + " " + playerList.get(i).getDisplayName());
                             }
                         }
                         playerIn.sendMessage(ChatColor.GREEN.toString() + ChatColor.ITALIC.toString() + "チームを振り分けました。");
@@ -85,15 +86,19 @@ public class ClickEventListener implements Listener {
 
     @EventHandler
     public void onItemClick(PlayerInteractEvent event){
-        Player playerIn = event.getPlayer();
-        Action actionIn = event.getAction();
-        ItemMeta playerMainHand = playerIn.getInventory().getItemInMainHand().getItemMeta();
-        if (playerMainHand != null) {
-            if (actionIn.equals(Action.RIGHT_CLICK_AIR) || actionIn.equals(Action.RIGHT_CLICK_BLOCK)) {
-                if (playerMainHand.getDisplayName().equals(ItemDebugMenu.getInstance().itemName)) {
-                    playerIn.openInventory(MenuCommandExecutor.getInstance().getInventory(playerIn));
+        try {
+            Player playerIn = event.getPlayer();
+            Action actionIn = event.getAction();
+            ItemMeta playerMainHand = playerIn.getInventory().getItemInMainHand().getItemMeta();
+            if (playerMainHand != null && actionIn != null) {
+                if (actionIn.equals(Action.RIGHT_CLICK_AIR) || actionIn.equals(Action.RIGHT_CLICK_BLOCK)) {
+                    if (playerMainHand.getDisplayName().equals(ItemDebugMenu.getInstance().itemName)) {
+                        playerIn.openInventory(MenuCommandExecutor.getInstance().getInventory(playerIn));
+                    }
                 }
             }
+        }catch (Exception e){
+            //
         }
     }
 

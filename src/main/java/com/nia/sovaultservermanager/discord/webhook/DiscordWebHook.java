@@ -12,8 +12,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscordWebHook {
-    private String USER_AGENT = "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)";
+public class DiscordWebHook{
+
+    private final String USER_AGENT = "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)";
     private final URL url;
     private String content;
     private String username;
@@ -25,53 +26,24 @@ public class DiscordWebHook {
         this.url = url;
     }
 
-    public DiscordWebHook(String url) throws MalformedURLException {
-        this.url = new URL(url);
-    }
-
-    public DiscordWebHook setContent(String content){
+    public DiscordWebHook setContent(String content) {
         this.content = content;
         return this;
     }
 
-    public DiscordWebHook setAvatar(String avatarUrl){
-        this.avatarUrl = avatarUrl;
+    public DiscordWebHook setUsername(String username) {
+        this.username = username;
         return this;
     }
 
-    public DiscordWebHook setUsername(String username){
-        this.username = username;
+    public DiscordWebHook setAvatar(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
         return this;
     }
 
     public DiscordWebHook setTTS(boolean tts) {
         this.tts = tts;
         return this;
-    }
-
-    public DiscordWebHook setUserAgent(String agent){
-        this.USER_AGENT = agent;
-        return this;
-    }
-
-    public boolean getTTS(){
-        return tts;
-    }
-
-    public URL getUrl() {
-        return url;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public void send() throws IOException {

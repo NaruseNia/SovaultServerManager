@@ -1,41 +1,47 @@
 package com.nia.sovaultservermanager.command;
 
 import com.nia.sovaultservermanager.SovaultServerManager;
+import com.nia.sovaultservermanager.util.ChannelType;
+import com.nia.sovaultservermanager.util.PropertyType;
+import com.nia.sovaultservermanager.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
+import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TeamCommandExecutor implements CommandExecutor {
+
+    @NonNull
+    private final Properties message = SovaultServerManager.getProperties(PropertyType.MAIN);
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         List<Player> players = new ArrayList<>(SovaultServerManager.getInstance().getServer().getOnlinePlayers());
-        if (args.length == 3) {
-            if ("shuffle".equals(args[0]) || "sh".equals(args[0])) {
-                //leaveAllPlayer(players);
-                joinAllPlayerRandom(args[1], args[2], players);
-                SovaultServerManager.sendAllPlayer(ChatColor.GREEN.toString() + ChatColor.ITALIC.toString() + "チーム分けしました。");
-                SovaultServerManager.sendAllPlayer(ChatColor.RED.toString() + ChatColor.ITALIC.toString() + "!Warning!全員がチームから正常に抜けていない可能性があります。/team leaveall　を試してみてください。");
-                return true;
-            }
-        }else if (args.length == 1) {
+        if (args.length == 1) {
             if (("leaveall".equals(args[0]) || "la".equals(args[0]))) {
                 leaveAllPlayer(players);
-                SovaultServerManager.sendAllPlayer(ChatColor.GREEN.toString() + ChatColor.ITALIC.toString() + "全員をチームから抜けさせました。");
+                SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.leave"));
+                return true;
+            }else if (("help".equals(args[0]) || "?".equals(args[0]))) {
+                Utils.sendMessageLine(4, "command.team.help", ChannelType.NONE, sender);
+                return true;
+            }
+        }else if (args.length == 3) {
+            if ("shuffle".equals(args[0]) || "sh".equals(args[0])) {
+                leaveAllPlayer(players);
+                joinAllPlayerRandom(args[1], args[2], players);
+                SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.split"));
+                SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.info"));
                 return true;
             }
         }
-        return false;
+        Utils.sendMessageLine(2, "command.team.error", ChannelType.MAIN_ERROR, sender);
+        return true;
     }
 
     private void joinAllPlayerRandom(String team1, String team2, List<Player> playersIn){
