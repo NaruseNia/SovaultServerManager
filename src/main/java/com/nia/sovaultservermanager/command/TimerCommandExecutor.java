@@ -29,6 +29,11 @@ public class TimerCommandExecutor implements CommandExecutor {
         if (args.length == 2) {
             if (args[0].equals("start")) {
                 try {
+                    SovaultServerManager.getInstance().getTimerTask().cancel();
+                }catch (Exception e) {
+                    //
+                }
+                try {
                     SovaultServerManager.getInstance().setTimerTime(Integer.parseInt(args[1]));
                 } catch (Exception e) {
                     Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, "第一引数には数値を入力してください。");
