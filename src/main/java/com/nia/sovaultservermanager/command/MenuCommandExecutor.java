@@ -1,6 +1,9 @@
 package com.nia.sovaultservermanager.command;
 
 import com.nia.sovaultservermanager.item.ItemDebugMenu;
+import com.nia.sovaultservermanager.permission.SSMPermissions;
+import com.nia.sovaultservermanager.util.ChannelType;
+import com.nia.sovaultservermanager.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,7 +24,7 @@ public class MenuCommandExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
-        if (sender instanceof Player){
+        if (sender instanceof Player || sender.hasPermission(SSMPermissions.menuPermission)){
             if (args.length == 0) {
                 Player playerIn = (Player) sender;
                 playerIn.openInventory(getInventory(playerIn));
@@ -32,8 +35,8 @@ public class MenuCommandExecutor implements CommandExecutor {
                 return true;
             }
         }
-
-        return false;
+        Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, String.format(Utils.getMessageConfig().getProperty("command.error.permission"), SSMPermissions.menuPermission.getName()));
+        return true;
     }
 
     public Inventory getInventory(Player playerIn){

@@ -1,14 +1,12 @@
 package com.nia.sovaultservermanager.util;
 
 import com.nia.sovaultservermanager.SovaultServerManager;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permissible;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.Player;
 import org.springframework.lang.NonNull;
 
-import javax.swing.text.html.parser.Entity;
+import java.lang.reflect.Constructor;
 import java.sql.Time;
 import java.util.Objects;
 import java.util.Properties;
@@ -33,6 +31,55 @@ public class Utils {
         for (int i = 1; i <= line; i++) {
             target.sendMessage(channelText + message.getProperty(property + i));
         }
+    }
+
+    @Deprecated
+    public static void sendPacket(Player player, Object packet) {
+        try {
+            Object handle = player.getClass().getMethod("getHandle").invoke(player);
+            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
+            playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Deprecated
+    public static void sendTitlePacket(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
+        try {
+            Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
+                    .invoke(null, "{\"text\": \"" + title + "\"}");
+            Constructor<?> titleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
+                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
+                    int.class, int.class, int.class);
+            Object packet = titleConstructor.newInstance(
+                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle,
+                    fadeInTime, showTime, fadeOutTime);
+
+            Object chatsTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
+                    .invoke(null, "{\"text\": \"" + subtitle + "\"}");
+            Constructor<?> timingTitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
+                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
+                    int.class, int.class, int.class);
+            Object timingPacket = timingTitleConstructor.newInstance(
+                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null), chatsTitle,
+                    fadeInTime, showTime, fadeOutTime);
+
+            sendPacket(player, packet);
+            sendPacket(player, timingPacket);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Class<?> getNMSClass(String name) {
+        try {
+            return Class.forName("net.minecraft.server."
+                    + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void sendMessageChannel(CommandSender target, ChannelType channel, String messageIn){

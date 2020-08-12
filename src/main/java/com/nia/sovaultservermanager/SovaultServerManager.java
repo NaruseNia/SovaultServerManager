@@ -9,6 +9,9 @@ import com.nia.sovaultservermanager.listener.ClickEventListener;
 import com.nia.sovaultservermanager.test.TestCommandExecutor;
 import com.nia.sovaultservermanager.util.PropertyLoader;
 import com.nia.sovaultservermanager.util.PropertyType;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,6 +29,8 @@ public final class SovaultServerManager extends JavaPlugin {
 
     private BukkitTask timerTask = null;
     private int timerTime;
+    private String timerTitle;
+    private String timerSubtitle;
 
     private static Properties properties;
     private static Properties stat;
@@ -36,6 +41,8 @@ public final class SovaultServerManager extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        saveDefaultConfig();
 
         //プロパティファイルの読み込み
         try {
@@ -55,14 +62,26 @@ public final class SovaultServerManager extends JavaPlugin {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
-        //sendToDiscord("こんにちは！");
+        Bukkit.getConsoleSender().sendMessage("");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "     ___           ___           ___              ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "    /\\__\\         /\\__\\         /\\  \\       ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "   /:/ _/_       /:/ _/_       |::\\  \\          ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "  /:/ /\\  \\     /:/ /\\  \\      |:|:\\  \\     ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + " /:/ /::\\  \\   /:/ /::\\  \\   __|:|\\:\\  \\   ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "/:/_/:/\\:\\__\\ /:/_/:/\\:\\__\\ /::::|_\\:\\__\\" + ChatColor.DARK_GREEN + "  SovaultServerManager " + ChatColor.AQUA + SSMMeta.VERSION.get());
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "\\:\\/:/ /:/  / \\:\\/:/ /:/  / \\:\\~~\\  \\/__/ " + ChatColor.DARK_GRAY + " Created by Naruse Nia. Luckperm no marupakuri!");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + " \\::/ /:/  /   \\::/ /:/  /   \\:\\  \\          ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "  \\/_/:/  /     \\/_/:/  /     \\:\\  \\         ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "    /:/  /        /:/  /       \\:\\__\\          ");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "    \\/__/         \\/__/         \\/__/          ");
+        Bukkit.getConsoleSender().sendMessage("");
 
         getCommand("stat").setExecutor(new StatCommandExecutor());
         getCommand("menu").setExecutor(new MenuCommandExecutor());
         getCommand("test").setExecutor(new TestCommandExecutor());
         getCommand("team").setExecutor(new TeamCommandExecutor());
         getCommand("timer").setExecutor(new TimerCommandExecutor());
+
 
         getServer().getPluginManager().registerEvents(new ClickEventListener(), this);
     }
@@ -72,8 +91,28 @@ public final class SovaultServerManager extends JavaPlugin {
 
     }
 
+    public static FileConfiguration config(){
+        return SovaultServerManager.getInstance().getConfig();
+    }
+
     public BukkitTask getTimerTask() {
         return timerTask;
+    }
+
+    public String getTimerTitle() {
+        return timerTitle;
+    }
+
+    public String getTimerSubtitle() {
+        return timerSubtitle;
+    }
+
+    public void setTimerTitle(String timerTitle) {
+        this.timerTitle = timerTitle;
+    }
+
+    public void setTimerSubtitle(String timerSubtitle) {
+        this.timerSubtitle = timerSubtitle;
     }
 
     public void setTimerTask(BukkitTask timerTask) {

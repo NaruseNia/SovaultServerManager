@@ -1,6 +1,8 @@
 package com.nia.sovaultservermanager.command;
 
 import com.nia.sovaultservermanager.SovaultServerManager;
+import com.nia.sovaultservermanager.permission.SSMPermissions;
+import com.nia.sovaultservermanager.util.ChannelType;
 import com.nia.sovaultservermanager.util.PropertyType;
 import com.nia.sovaultservermanager.util.Utils;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -13,14 +15,11 @@ import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import sun.plugin.dom.core.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 
 public class StatCommandExecutor implements CommandExecutor {
 
@@ -29,47 +28,43 @@ public class StatCommandExecutor implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-
-        /*
-        Properties message = new Properties();
-        ClassLoader classLoader = getClass().getClassLoader();
-        try {
-            message.load(new FileInputStream(classLoader.getResource("messages/message.properties").getPath().replaceFirst("!", "")));
-        } catch (IOException e) {
-            SovaultServerManager.getInstance().getLogger().warning(e.getMessage());
-        }
-        */
-
-        if (sender instanceof Player){
-            if (args.length == 3) {
-                if (args[0].equals("--uuid") && args[1].equals("-offline")) {
-                    Player playerTarget = (Player) Bukkit.getOfflinePlayer(UUID.fromString(args[2]));
+        if (sender instanceof Player || sender.hasPermission(SSMPermissions.statPermission)){
+            if (args.length == 1){
+                Player playerTarget = Bukkit.getPlayer(args[0]);
+                if (playerTarget != null) {
                     int statPlayOneTick = playerTarget.getStatistic(Statistic.PLAY_ONE_TICK);
                     sender.sendMessage(message.getProperty("channel.main.system") + "§7" + playerTarget.getDisplayName() + "のプレイ時間:" + ChatColor.GREEN + Utils.ConvertTickToTime(statPlayOneTick));
                     return true;
                 }
-            }else if (args.length == 1){
-                Player playerTarget = Bukkit.getPlayer(args[0]);
-                int statPlayOneTick = playerTarget.getStatistic(Statistic.PLAY_ONE_TICK);
-                sender.sendMessage(message.getProperty("channel.main.system") + "§7" + playerTarget.getDisplayName() + "のプレイ時間:" + ChatColor.GREEN + Utils.ConvertTickToTime(statPlayOneTick));
+                Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, message.getProperty("command.stat.error.player"));
                 return true;
             }else if (args.length == 2){
                 if (args[1].equals("-all")) {
                     Player playerTarget = Bukkit.getPlayer(args[0]);
-                    sender.sendMessage( ChatColor.AQUA + ChatColor.BOLD.toString() + playerTarget.getDisplayName() + ChatColor.RESET + "§7の統計です。" );
-                    showAllStats(sender, playerTarget);
-                    return true;
-                }else if ( args[0].equals("--uuid") ){
-                    Player playerTarget = Bukkit.getPlayer(UUID.fromString(args[1]));
-                    sender.sendMessage(ChatColor.AQUA + ChatColor.BOLD.toString() + playerTarget.getDisplayName() + ChatColor.RESET + "§7の統計です。");
-                    showAllStats(sender, playerTarget);
+                    if (playerTarget != null) {
+                        sender.sendMessage(ChatColor.AQUA + ChatColor.BOLD.toString() + playerTarget.getDisplayName() + ChatColor.RESET + "§7の統計です。");
+                        showAllStats(sender, playerTarget);
+                        return true;
+                    }
+                    Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, message.getProperty("command.stat.error.player"));
                     return true;
                 }
             }
-            return false;
+            Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, String.format(message.getProperty("command.error.permission"), SSMPermissions.statPermission.getName()));
+            return true;
         }
 
         return false;
+    }
+
+    @Deprecated
+    public Player getPlayerWithCheck(String name, Runnable errorMessage){
+        try{
+            return Bukkit.getPlayer(name);
+        }catch (Exception e){
+            errorMessage.run();
+            return null;
+        }
     }
 
     public void showAllStats(CommandSender sender, Player playerTarget){

@@ -1,6 +1,7 @@
 package com.nia.sovaultservermanager.command;
 
 import com.nia.sovaultservermanager.SovaultServerManager;
+import com.nia.sovaultservermanager.permission.SSMPermissions;
 import com.nia.sovaultservermanager.util.ChannelType;
 import com.nia.sovaultservermanager.util.PropertyType;
 import com.nia.sovaultservermanager.util.Utils;
@@ -17,30 +18,34 @@ import java.util.*;
 public class TeamCommandExecutor implements CommandExecutor {
 
     @NonNull
-    private final Properties message = SovaultServerManager.getProperties(PropertyType.MAIN);
+    private final Properties message = Objects.requireNonNull(SovaultServerManager.getProperties(PropertyType.MAIN));
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        List<Player> players = new ArrayList<>(SovaultServerManager.getInstance().getServer().getOnlinePlayers());
-        if (args.length == 1) {
-            if (("leaveall".equals(args[0]) || "la".equals(args[0]))) {
-                leaveAllPlayer(players);
-                SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.leave"));
-                return true;
-            }else if (("help".equals(args[0]) || "?".equals(args[0]))) {
-                Utils.sendMessageLine(4, "command.team.help", ChannelType.NONE, sender);
-                return true;
+        if (sender instanceof Player || sender.hasPermission(SSMPermissions.teamPermission)) {
+            List<Player> players = new ArrayList<>(SovaultServerManager.getInstance().getServer().getOnlinePlayers());
+            if (args.length == 1) {
+                if (("leaveall".equals(args[0]) || "la".equals(args[0]))) {
+                    leaveAllPlayer(players);
+                    SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.leave"));
+                    return true;
+                } else if (("help".equals(args[0]) || "?".equals(args[0]))) {
+                    Utils.sendMessageLine(4, "command.team.help", ChannelType.NONE, sender);
+                    return true;
+                }
+            } else if (args.length == 3) {
+                if ("shuffle".equals(args[0]) || "sh".equals(args[0])) {
+                    leaveAllPlayer(players);
+                    joinAllPlayerRandom(args[1], args[2], players);
+                    SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.split"));
+                    SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.info"));
+                    return true;
+                }
             }
-        }else if (args.length == 3) {
-            if ("shuffle".equals(args[0]) || "sh".equals(args[0])) {
-                leaveAllPlayer(players);
-                joinAllPlayerRandom(args[1], args[2], players);
-                SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.split"));
-                SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.info"));
-                return true;
-            }
+            Utils.sendMessageLine(2, "command.team.error", ChannelType.MAIN_ERROR, sender);
+            return true;
         }
-        Utils.sendMessageLine(2, "command.team.error", ChannelType.MAIN_ERROR, sender);
+        Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, String.format(message.getProperty("command.error.permission"), SSMPermissions.teamPermission.getName()));
         return true;
     }
 
