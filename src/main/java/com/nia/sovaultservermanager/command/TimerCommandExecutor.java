@@ -150,13 +150,7 @@ public class TimerCommandExecutor implements CommandExecutor {
             if(time <= 0){
                 for (Player player : players){
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(String.valueOf(Utils.ConvertSecToTime(time))));
-                    PlayerConnection connection = ((CraftPlayer)player).getHandle().playerConnection;
-                    IChatBaseComponent titleText = IChatBaseComponent.ChatSerializer.a(SovaultServerManager.getInstance().getTimerTitle());
-                    IChatBaseComponent subtitleText = IChatBaseComponent.ChatSerializer.a(SovaultServerManager.getInstance().getTimerSubtitle());
-                    PacketPlayOutTitle title = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleText, 10, 70, 20);
-                    PacketPlayOutTitle subtitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleText, 10, 70, 20);
-                    connection.sendPacket(title);
-                    connection.sendPacket(subtitle);
+					Utils.sendTitlePacket(player, SovaultServerManager.getInstance().getTimerTitle, SovaultServerManager.getInstance().getTimerSubtitle());
 					player.playSound(player.getLocation(), SovaultServerManager.getTimerSound(), 1.0f, 1.0f);
                 }
                 plugin.getServer().getScheduler().cancelTask(SovaultServerManager.getInstance().getTimerTask().getTaskId());

@@ -21,6 +21,16 @@ public class Utils {
         return message;
     }
 
+	public static void sendTitlePacket(Player player, String title, String subtitle ){
+    	PlayerConnection connection = ((CraftPlayer)player).getHandle().playerConnection;
+        IChatBaseComponent titleText = IChatBaseComponent.ChatSerializer.a(title);
+        IChatBaseComponent subtitleText = IChatBaseComponent.ChatSerializer.a(subtitle);
+        PacketPlayOutTitle title = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleText, 10, 70, 20);
+        PacketPlayOutTitle subtitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleText, 10, 70, 20);
+        connection.sendPacket(title);
+        connection.sendPacket(subtitle);
+	}
+
     public static void sendMessageLine(int line, String property, ChannelType channel, CommandSender target){
         String channelText;
         if (channel.equals(ChannelType.MAIN_SYSTEM)) channelText = message.getProperty("channel.main.system");
@@ -39,34 +49,6 @@ public class Utils {
             Object handle = player.getClass().getMethod("getHandle").invoke(player);
             Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
             playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Deprecated
-    public static void sendTitlePacket(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
-        try {
-            Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
-                    .invoke(null, "{\"text\": \"" + title + "\"}");
-            Constructor<?> titleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
-                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
-                    int.class, int.class, int.class);
-            Object packet = titleConstructor.newInstance(
-                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle,
-                    fadeInTime, showTime, fadeOutTime);
-
-            Object chatsTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
-                    .invoke(null, "{\"text\": \"" + subtitle + "\"}");
-            Constructor<?> timingTitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
-                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
-                    int.class, int.class, int.class);
-            Object timingPacket = timingTitleConstructor.newInstance(
-                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null), chatsTitle,
-                    fadeInTime, showTime, fadeOutTime);
-
-            sendPacket(player, packet);
-            sendPacket(player, timingPacket);
         } catch (Exception e) {
             e.printStackTrace();
         }
