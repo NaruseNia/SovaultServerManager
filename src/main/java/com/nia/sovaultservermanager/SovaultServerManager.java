@@ -28,6 +28,7 @@ public final class SovaultServerManager extends JavaPlugin {
     private static SovaultServerManager instance;
 
     private BukkitTask timerTask = null;
+	private Sound timerSound;
     private int timerTime;
     private String timerTitle;
     private String timerSubtitle;
@@ -98,6 +99,14 @@ public final class SovaultServerManager extends JavaPlugin {
     public BukkitTask getTimerTask() {
         return timerTask;
     }
+
+	public SoundType getTimerSound(){
+		return timerSound;
+	}
+
+	public void setTimerSound(Sound sound){
+		this.timerSound = sound;
+	}
 
     public String getTimerTitle() {
         return timerTitle;

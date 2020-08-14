@@ -56,13 +56,14 @@ public class TimerCommandExecutor implements CommandExecutor {
                         }
                         try {
                             plugin.setTimerTime(Integer.parseInt(args[1]));
-                        } catch (Exception e) {
+						} catch (Exception e) {
                             Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, ChatColor.RESET + "第一引数には数値を入力してください。");
                             return true;
                         }
 
-                        plugin.setTimerTitle(SovaultServerManager.config().get("titles." + args[2] + ".title.json").toString());
-                        plugin.setTimerSubtitle(SovaultServerManager.config().get("titles." + args[2] + ".subtitle.json").toString());
+						if (SovaultServerManager.config().contains("titles." + args[2] + "sound"))plugin.setTimerSound(SovaultServerManager.config().get("titles." + args[2] + "sound").toString());
+                        if (SovaultServerManager.config().contains("titles." + args[2] + "title.json"))plugin.setTimerTitle(SovaultServerManager.config().get("titles." + args[2] + ".title.json").toString());
+                        if (SovaultServerManager.config().contains("titles." + args[2] + "subtitle.json"))plugin.setTimerSubtitle(SovaultServerManager.config().get("titles." + args[2] + ".subtitle.json").toString());
 
                         Utils.sendMessageChannel(sender, ChannelType.MAIN_SYSTEM, Utils.getMessageConfig().getProperty("command.timer.start"));
                         for (Player player : players) {
@@ -71,8 +72,16 @@ public class TimerCommandExecutor implements CommandExecutor {
                         plugin.setTimerTask(new Timer(SovaultServerManager.getInstance(), SovaultServerManager.getInstance().getTimerTime()).runTaskTimer(SovaultServerManager.getInstance(), 0L, 20L));
                         return true;
                     case "set":
+						if (args[1].equals("sound")) {
+							new AnvilGUI(plugin, (Player) sender, "Put json here.", (player, reply) -> {
+								sender.sendMessage(reply);
+								SovaultServerManager.config().set("titles." + args[2] + "sound", reply);
+								plugin.saveConfig();
+								return null;
+							})
+						}
                         if (args[1].equals("title")) {
-                            new AnvilGUI(plugin, (Player) sender, "Json here", (player, reply) -> {
+                            new AnvilGUI(plugin, (Player) sender, "Put json here.", (player, reply) -> {
                                 sender.sendMessage(reply);
                                 SovaultServerManager.config().set("titles." + args[2] + ".title.json", reply);
                                 plugin.saveConfig();
@@ -80,7 +89,7 @@ public class TimerCommandExecutor implements CommandExecutor {
                             });
                             return true;
                         } else if (args[1].equals("subtitle")) {
-                            new AnvilGUI(plugin, (Player) sender, "Json here", (player, reply) -> {
+                            new AnvilGUI(plugin, (Player) sender, "Put json here.", (player, reply) -> {
                                 sender.sendMessage(reply);
                                 SovaultServerManager.config().set("titles." + args[2] + ".subtitle.json", reply);
                                 plugin.saveConfig();
@@ -106,8 +115,10 @@ public class TimerCommandExecutor implements CommandExecutor {
                     Utils.sendMessageChannel(sender, ChannelType.MAIN_SYSTEM, ChatColor.GREEN + "タイトルセット一覧");
                     for (String key : SovaultServerManager.config().getConfigurationSection("titles").getKeys(false)) {
                         Utils.sendMessageChannel(sender, ChannelType.MAIN_SYSTEM, ChatColor.GREEN + key + ":");
-                        if (SovaultServerManager.config().get("titles." + key + ".title.json") != null) Utils.sendMessageChannel(sender, ChannelType.MAIN_SYSTEM, ChatColor.GOLD + "   title:" + SovaultServerManager.config().get("titles." + key + ".title.json").toString());
-                        if (SovaultServerManager.config().get("titles." + key + ".subtitle.json") != null) Utils.sendMessageChannel(sender, ChannelType.MAIN_SYSTEM, ChatColor.GOLD + "   subtitle:" + SovaultServerManager.config().get("titles." + key + ".subtitle.json").toString());
+                        
+						if (SovaultServerManager.config().get("titles." + key + ".title.json") != null) Utils.sendMessageChannel(sender, ChannelType.MAIN_SYSTEM, ChatColor.GOLD + "   title:" + SovaultServerManager.config().get("titles." + key + ".title.json").toString());
+                        
+						if (SovaultServerManager.config().get("titles." + key + ".subtitle.json") != null) Utils.sendMessageChannel(sender, ChannelType.MAIN_SYSTEM, ChatColor.GOLD + "   subtitle:" + SovaultServerManager.config().get("titles." + key + ".subtitle.json").toString());
                     }
                     return true;
                 } else if (args[0].equals("?") || args[0].equals("help")) {
@@ -146,6 +157,7 @@ public class TimerCommandExecutor implements CommandExecutor {
                     PacketPlayOutTitle subtitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleText, 10, 70, 20);
                     connection.sendPacket(title);
                     connection.sendPacket(subtitle);
+					player.playSound(player.getLocation(), SovaultServerManager.getTimerSound(), 1.0f, 1.0f);
                 }
                 plugin.getServer().getScheduler().cancelTask(SovaultServerManager.getInstance().getTimerTask().getTaskId());
             }else{
