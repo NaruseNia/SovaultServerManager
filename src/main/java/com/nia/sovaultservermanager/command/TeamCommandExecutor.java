@@ -17,9 +17,6 @@ import java.util.*;
 
 public class TeamCommandExecutor implements CommandExecutor {
 
-    @NonNull
-    private final Properties message = Objects.requireNonNull(SovaultServerManager.getProperties(PropertyType.MAIN));
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player || sender.hasPermission(SSMPermissions.teamPermission)) {
@@ -27,7 +24,7 @@ public class TeamCommandExecutor implements CommandExecutor {
             if (args.length == 1) {
                 if (("leaveall".equals(args[0]) || "la".equals(args[0]))) {
                     leaveAllPlayer(players);
-                    SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.leave"));
+                    SovaultServerManager.sendAllPlayer(Utils.getMessageConfig().getProperty("channel.main.system") + message.getProperty("command.team.leave"));
                     return true;
                 } else if (("help".equals(args[0]) || "?".equals(args[0]))) {
                     Utils.sendMessageLine(4, "command.team.help", ChannelType.NONE, sender);
@@ -37,15 +34,15 @@ public class TeamCommandExecutor implements CommandExecutor {
                 if ("shuffle".equals(args[0]) || "sh".equals(args[0])) {
                     leaveAllPlayer(players);
                     joinAllPlayerRandom(args[1], args[2], players);
-                    SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.split"));
-                    SovaultServerManager.sendAllPlayer(message.getProperty("channel.main.system") + message.getProperty("command.team.info"));
+                    SovaultServerManager.sendAllPlayer(Utils.getMessageConfig().getProperty("channel.main.system") + Utils.getMessageConfig().getProperty("command.team.split"));
+                    SovaultServerManager.sendAllPlayer(Utils.getMessageConfig().getProperty("channel.main.system") + Utils.getMessageConfig().getProperty("command.team.info"));
                     return true;
                 }
             }
-            Utils.sendMessageLine(2, "command.team.error", ChannelType.MAIN_ERROR, sender);
+            Utils.sendUtils.getMessageConfig()Line(2, "command.team.error", ChannelType.MAIN_ERROR, sender);
             return true;
         }
-        Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, String.format(message.getProperty("command.error.permission"), SSMPermissions.teamPermission.getName()));
+        Utils.sendMessageChannel(sender, ChannelType.MAIN_ERROR, String.format(Utils.getMessageConfig().getProperty("command.error.permission"), SSMPermissions.teamPermission.getName()));
         return true;
     }
 
